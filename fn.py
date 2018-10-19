@@ -34,7 +34,7 @@ class image:
 				self.springFactor = -self.springK * self.pos * abs(self.pos)
 				self.vel = self.dragFactor * self.vel + self.acc + self.springFactor
 				if abs(self.pos + self.vel) < self.offset - 1: self.pos += self.vel
-				print 'pos = ', self.pos, 'vel =', self.vel, 'acc =', self.acc
+				print( 'pos = ', self.pos, 'vel =', self.vel, 'acc =', self.acc)
 		self.x, self.y = component(), component()
 		self.theta = component(springK=0.01,dragFactor=0.5,offset=3, gaussDev=0.025)
 		self.maxCenterShift = 10 # maximum no. of pixels through which center of rotation can shift
@@ -48,14 +48,14 @@ class image:
 		randY, randX = gauss(0, 0.4*self.maxCenterShift), gauss(0, 0.4*self.maxCenterShift)
 		randY, randX = clip(randY, self.maxCenterShift), clip(randX, self.maxCenterShift)
 		self.center = (roundInt(self.H/2+randY), roundInt(self.W/2+randX))
-		print "center:", self.center
+		print("center:", self.center)
 
 	def view(self, name):
 		M = cv2.getRotationMatrix2D(self.center, self.theta.pos, 1.0)
 		img2 = cv2.warpAffine(self.img, M, (self.W, self.H))
 		brightSum = brightCal(img2, roundInt(self.y.offset-self.y.pos), roundInt(self.x.offset-self.x.pos))
-		print 'bright_parameter: f:', brightSum, 'i:', self.bright, 'res:', self.res
-		print '\t\t  diff:', brightSum - self.bright, 'param:', (brightSum - self.bright)/self.res, 'control_param:', roundInt(self.brightControl * (brightSum - self.bright)/self.res)
+		print('bright_parameter: f:', brightSum, 'i:', self.bright, 'res:', self.res)
+		print('\t\t  diff:', brightSum - self.bright, 'param:', (brightSum - self.bright)/self.res, 'control_param:', roundInt(self.brightControl * (brightSum - self.bright)/self.res))
 		img2 = cv2.add(img2,np.array([float(roundInt(self.brightControl * (self.bright - brightSum) / self.res))]))
 		if self.first:
 			self.img3 = img2
@@ -63,7 +63,7 @@ class image:
 		else: self.img3 = cv2.addWeighted(img2,0.3,self.img3,0.7,0.0)
 		blur = 2 * roundInt(abs(self.blur.pos)) + 1
 		zoom = roundInt(2 - floor(blur/3))
-		print 'blur_pos:', blur, 'zoom_pos:', zoom
+		print('blur_pos:', blur, 'zoom_pos:', zoom)
 		img4 = cv2.GaussianBlur(self.img3,(blur, blur), 0.0)[zoom:-zoom, zoom:-zoom]
 		img4 = cv2.resize(img4, (self.W, self.H))
 		cv2.imshow(name, img4[roundInt(self.y.offset-self.y.pos):roundInt(-self.y.offset-self.y.pos), roundInt(self.x.offset-self.x.pos):roundInt(-self.x.offset-self.x.pos)])

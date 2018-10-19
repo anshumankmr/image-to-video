@@ -16,7 +16,7 @@ if __name__ == '__main__':
 	while(True):
 		img.view('output')
 		k = waitKey(1)
-		if k == ord('q'):
+		if k == ord('q') or ord('Q'):
 			destroyAllWindows()
 			break
 		img.centershift()
